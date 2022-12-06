@@ -15,16 +15,18 @@ for (let index = 0; index < operations.length; index++) {
     // 2. get index of origin and destination stacks -> stack number - 1
     const originStackIndex = parseInt(operation[3]) - 1
     const destinationStackIndex = parseInt(operation[5]) - 1
-    console.log(operation)
 
     // move 5 form 4 to 7
     // we know that we have nine stack (indexes from 0 to 8)
     const temporary = []
-    while (howMany > 0) {
-        // 3. extract element to temporary array and swap its value in stack with undefined/empty string
-        // 4. repeat for how many elements to move
-        
-        howMany--
+    for ((line,idx) of lines) {
+        if (line[originStackIndex] === undefined) continue
+
+        while (howMany > 0) {
+            temporary.push(line[originStackIndex])
+            line[originStackIndex] = undefined
+            howMany--
+        }
     }
     // 5. get the first element with undefined/empty string and replace value with first form temporary stack
     // 6. if index of lines is 0 then add empty line in the beginning of lines and continue
