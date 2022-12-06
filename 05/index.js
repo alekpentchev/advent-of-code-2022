@@ -19,10 +19,13 @@ for (let index = 0; index < operations.length; index++) {
 
     // move 5 form 4 to 7
     // we know that we have nine stack (indexes from 0 to 8)
-
-    // 3. extract element to temporary array and swap its value in stack with undefined/empty string
-
-    // 4. repeat for how many elements to move
+    const temporary = []
+    while (howMany > 0) {
+        // 3. extract element to temporary array and swap its value in stack with undefined/empty string
+        // 4. repeat for how many elements to move
+        
+        howMany--
+    }
     // 5. get the first element with undefined/empty string and replace value with first form temporary stack
     // 6. if index of lines is 0 then add empty line in the beginning of lines and continue
 
