@@ -45,10 +45,9 @@ class Folder {
     for (let folder of this.folders) {
       totalFolders.push(folder);
       if (folder.hasChildren) {
-        totalFolders = [...totalFolders, folder.getTotalFolders()];
+        totalFolders = [...totalFolders, ...folder.getTotalFolders()];
       }
     }
-
     return totalFolders;
   }
 
