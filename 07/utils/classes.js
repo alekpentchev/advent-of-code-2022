@@ -6,8 +6,6 @@ class Folder {
     this.isRoot = parent ? false : true;
     this.parent = parent;
     this.hasChildren = false;
-    this.size = 0;
-    this.totalSize = 0;
   }
 
   addFile(file) {
@@ -21,40 +19,37 @@ class Folder {
   }
 
   getSize() {
-    for (file of this.files) {
-      this.size += file.getSize();
+    let size = 0
+    for (let file of this.files) {
+      size += file.getSize();
     }
-    return this.size;
+    return size;
   }
 
   getTotalSize() {
-    this.size = this.getSize();
-    this.totalSize = this.size;
-    for (folder of this.folders) {
-      this.totalSize += folder.getTotalSize();
+    let size = this.getSize();
+    for (let folder of this.folders) {
+      size += folder.getTotalSize();
     }
+    return size;
   }
 
   getParent() {
     return this.isRoot ? null : this.parent;
   }
 
-  getFolders() {
-    return this.folders;
-  }
-
   getTotalFolders() {
     if (!this.hasChildren) return [];
 
-    const totalFolders = []
-    for (folder of this.folders) {
-        totalFolders.push(folder)
-        if (folder.hasChildren) {
-            totalFolders += folder.getTotalFolders()
-        }
+    let totalFolders = [];
+    for (let folder of this.folders) {
+      totalFolders.push(folder);
+      if (folder.hasChildren) {
+        totalFolders = [...totalFolders, folder.getTotalFolders()];
+      }
     }
 
-    return totalFolders
+    return totalFolders;
   }
 
   getChildren() {
@@ -62,52 +57,55 @@ class Folder {
   }
 }
 
-
 class File {
-    constructor(rawName, parentFolder) {
-        this.name = rawName.split(' ')[1]
-        this.size = rawName.split(' ')[0]
-        this.parent = parentFolder
-    }
+  constructor(rawName, parentFolder) {
+    this.name = rawName.split(" ")[1];
+    this.size = parseInt(rawName.split(" ")[0]);
+    this.parent = parentFolder;
+  }
+
+  getSize() {
+    return this.size;
+  }
 }
 
 function buildTree(inputData) {
-    rootFolder = new Folder('root')
-    currentFolder = rootFolder
+  rootFolder = new Folder("root");
+  currentFolder = rootFolder;
 
-    for (line of inputData) {
-        // it will be a command
-        if (line.startsWith('$')) {
-            // it will be a cd command - go to folder
-            if (line.startsWith('$ cd')) {
-                // it will be a cd command - go to upper directory
-                if (line.startsWith('$ cd ..')) {
-                    currentFolder = currentFolder.getParent()
-                } else {
-                    const folderName = line.split(' ')[2].replace("\n", "")
-                    for (folder of currentFolder.getFolders()) {
-                        // move to the another folder from the parent folder
-                        if (folder.name === folderName) {
-                            currentFolder = folder
-                            break
-                        }
-                    }
-                }
-            }
+  for (let line of inputData) {
+    // it will be a command
+    if (line.startsWith("$")) {
+      // it will be a cd command - go to folder
+      if (line.startsWith("$ cd")) {
+        // it will be a cd command - go to upper directory
+        if (line.startsWith("$ cd ..")) {
+          currentFolder = currentFolder.getParent();
         } else {
-            // it will be a command - new directory, create it
-            if (line.startsWith('dir')) {
-                const folderName = line.split(' ')[1].replace("\n", "")
-                const newFolder = new Folder(folderName, currentFolder)
-                currentFolder.addFolder(newFolder)
-            } else {
-                const newFile = new File(line, currentFolder)
-                currentFolder.addFile(newFile)
+          const folderName = line.split(" ")[2].replace("\n", "");
+          for (let folder of currentFolder.folders) {
+            // move to the another folder from the parent folder
+            if (folder.name === folderName) {
+              currentFolder = folder;
+              break;
             }
+          }
         }
+      }
+    } else {
+      // it will be a command - new directory, create it
+      if (line.startsWith("dir")) {
+        const folderName = line.split(" ")[1].replace("\n", "");
+        const newFolder = new Folder(folderName, currentFolder);
+        currentFolder.addFolder(newFolder);
+      } else {
+        const newFile = new File(line, currentFolder);
+        currentFolder.addFile(newFile);
+      }
     }
+  }
 
-    return rootFolder
+  return rootFolder;
 }
 
-module.exports = { Folder, File, buildTree }    
+module.exports = { Folder, File, buildTree };
