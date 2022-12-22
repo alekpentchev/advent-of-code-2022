@@ -1,36 +1,31 @@
 const fs = require("fs");
 
-// 1.) First, we get the string input for the puzzle
-const input = fs.readFileSync("input.txt", "utf-8").split('\n\n');
-const stacksInput = input[0];
+const input = fs.readFileSync("input.txt", "utf-8");
 
-let lines = stacksInput.split('\n');
-// 1. remove last entry with stack names to simplify array processing
-lines = lines.slice(0, lines.length -1);
-const operations = input[1].split('\n')
+const { createStack } = require("./stack.js");
 
-for (let index = 0; index < operations.length; index++) {
-    const operation = operations[index].split('\n\n')[0].split(' ');
-    let howMany = parseInt(operation[1])
-    // 2. get index of origin and destination stacks -> stack number - 1
-    const originStackIndex = parseInt(operation[3]) - 1
-    const destinationStackIndex = parseInt(operation[5]) - 1
+let crane = [];
+let result = "";
 
-    // move 5 form 4 to 7
-    // we know that we have nine stack (indexes from 0 to 8)
-    const temporary = []
-    for ((line,idx) of lines) {
-        if (line[originStackIndex] === undefined) continue
-
-        while (howMany > 0) {
-            temporary.push(line[originStackIndex])
-            line[originStackIndex] = undefined
-            howMany--
-        }
+function movements(stack) {
+  input.split(/\r?\n/).forEach((line) => {
+    if (line[0] == "m") {
+      // example: move 1 from 4 to 1
+      let details = line.split(" ");
+      let quantity = details[1]; // how many crates to move
+      let from = details[3]; // from where
+      let to = details[5]; // to where
+      for (i = 0; i < quantity; i++) {
+        crane = stack[from - 1].shift(); // remove from top of current column
+        stack[to - 1].unshift(crane); // add to top of new column
+      }
     }
-    // 5. get the first element with undefined/empty string and replace value with first form temporary stack
-    // 6. if index of lines is 0 then add empty line in the beginning of lines and continue
-
-    stacksInput
-    
+  });
+  for (i = 0; i < stack.length; i++) {
+    // get top crate from each column
+    result += stack[i].shift();
+  }
+  console.log("Answer", result);
 }
+
+movements(createStack());
