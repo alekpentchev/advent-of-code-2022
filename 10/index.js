@@ -11,10 +11,6 @@ class SignalStrengths {
   calculateSignalStrength() {
     if (this.cycle === 20) {
       this.strengths[0] = this.cycle * this.x;
-    }
-
-    if (this.cycle === 20) {
-      this.strengths[0] = this.cycle * this.x;
     } else if (this.cycle === 60) {
       this.strengths[1] = this.cycle * this.x;
     } else if (this.cycle === 100) {
@@ -37,21 +33,21 @@ class SignalStrengths {
   getSignalStrengthsSum() {
     return this.strengths.reduce((acc, val) => acc + val, 0);
   }
+
+  tick(howMany, val) {
+    this.cycle += 1;
+    this.updateSignalStrengths();
+
+    if (howMany > 1) {
+      return this.tick(howMany - 1, val);
+    }
+
+    this.x = this.x + val;
+  };
 }
 
 const getSignalStrengths = (data) => {
   const Strengths = new SignalStrengths();
-
-  const tick = (howMany, val) => {
-    Strengths.cycle += 1;
-    Strengths.updateSignalStrengths();
-
-    if (howMany > 1) {
-      return tick(howMany - 1, val);
-    }
-
-    Strengths.x = Strengths.x + val;
-  };
 
   for (let idx = 0; idx < data.length; idx++) {
     const operation = data[idx];
@@ -61,7 +57,7 @@ const getSignalStrengths = (data) => {
       Strengths.updateSignalStrengths();
     } else if (operation.startsWith("addx")) {
       const xVal =  Number(operation.split(" ")[1])
-      tick(2, xVal);
+      Strengths.tick(2, xVal);
     }
   }
 
