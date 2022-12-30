@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { default: test } = require("node:test");
 const data = fs.readFileSync("input.txt", "utf-8").split("\n");
 
 const monkeys = [];
@@ -58,34 +57,33 @@ const prepareData = (data) => {
 //   console.log(monkeys)
 };
 
-const processRounds = (monkeys) => {
-    const rounds = Array(20)
+const processRounds = (monkeys, rounds) => {
 
     // go through 20 rounds
-    for (let idx = 0; idx < rounds.length; idx++) {
+    for (let idx = 0; idx < rounds; idx++) {
         // let every monkey inspect its items
         for (let monkeyIndex = 0; monkeyIndex < monkeys.length; monkeyIndex++) {
             const monkey = monkeys[monkeyIndex];
+            // inspect items
             for (let itemIndex = 0; itemIndex < monkey.items.length; itemIndex++) {
-                monkey.inspectedCount += 1
-
-                const item = parseInt(monkey.items[itemIndex]);
+                monkey.inspectedCount += 1;
+                const worryLevel = parseInt(monkey.items[itemIndex]);
                 const operand = monkey.operation[1]
-                const value = monkey.operation[2] === 'old' ? item : parseInt(monkey.operation[2])
-                const worryLevel = mathOperations[operand](item, value)
-                const boredWorryLevel = Math.floor(worryLevel / 3)
+                const value = monkey.operation[2] === 'old' ? worryLevel : parseInt(monkey.operation[2])
+                const newWorryLevel = mathOperations[operand](worryLevel, value)
+                const boredWorryLevel = Math.floor(newWorryLevel / 3)
                 monkey.items[itemIndex] = boredWorryLevel
                 const test = boredWorryLevel % monkey.testDivisionValue
 
                 if (test === 0) {
-                    // is divisible 
-                    const itemToSend = monkey.items.shift()
+                    const itemToSend = monkey.items[itemIndex]
                     monkeys[monkey.destinationMonkeyIfTrue].items.push(itemToSend)
                 } else {
-                    const itemToSend = monkey.items.shift()
+                    const itemToSend = monkey.items[itemIndex]
                     monkeys[monkey.destinationMonkeyIfFalse].items.push(itemToSend)
                 }
             }
+            monkey.items = []
         }
     }
 
@@ -97,4 +95,4 @@ const processRounds = (monkeys) => {
 
 // part one
 prepareData(data);
-console.log(processRounds(monkeys))
+console.log(processRounds(monkeys, 20))
