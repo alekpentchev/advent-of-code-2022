@@ -28,7 +28,7 @@ const prepareData = (data) => {
       }
     } else if (line.startsWith("  Starting items")) {
       // assign items to current monkey
-      const items = line.split(": ")[1].split(", ");
+      const items = line.split(": ")[1].split(", ").map(num => parseInt(num));
       currentMonkey.items = items;
     } else if (line.startsWith("  Operation")) {
       // extract the operation
@@ -71,12 +71,14 @@ const processRounds = (monkeys) => {
 
                 const item = parseInt(monkey.items[itemIndex]);
                 const operand = monkey.operation[1]
-                const value = monkey.operation[2]
+                const value = monkey.operation[2] === 'old' ? item : parseInt(monkey.operation[2])
                 const worryLevel = mathOperations[operand](item, value)
-                const boredWorryLevel = worryLevel % 3
+                const boredWorryLevel = Math.floor(worryLevel / 3)
+                monkey.items[itemIndex] = boredWorryLevel
+                const test = boredWorryLevel % monkey.testDivisionValue
 
-                // is divisible 
-                if (boredWorryLevel === 0) {
+                if (test === 0) {
+                    // is divisible 
                     const itemToSend = monkey.items.shift()
                     monkeys[monkey.destinationMonkeyIfTrue].items.push(itemToSend)
                 } else {
